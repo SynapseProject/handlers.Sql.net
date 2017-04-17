@@ -16,12 +16,12 @@ namespace Synapse.Handlers.Sql
 
         public SqlServerDatabaseEngine() { }
 
-        public SqlServerDatabaseEngine(SqlServerHandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters.Parameters, logger)
+        public SqlServerDatabaseEngine(SqlServerHandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters, logger)
         {
             this.Config = config;            
         }
 
-        public SqlConnection BuildConnection()
+        public override DbConnection BuildConnection()
         {
             SqlConnection con = new SqlConnection();
 

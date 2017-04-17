@@ -17,12 +17,12 @@ namespace Synapse.Handlers.Sql
 
         public OracleDatabaseEngine() { }
 
-        public OracleDatabaseEngine(HandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters.Parameters, logger)
+        public OracleDatabaseEngine(HandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters, logger)
         {
             this.Config = config;            
         }
 
-        public OracleConnection BuildConnection()
+        public override DbConnection BuildConnection()
         {
             OracleConnection con = new OracleConnection();
 

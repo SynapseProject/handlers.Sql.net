@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Synapse.Handlers.Sql
 {
@@ -12,23 +13,34 @@ namespace Synapse.Handlers.Sql
     {
         public Action<string, string> Logger { get; set; }
 
-        public List<ParameterType> Parameters { get; set; }
+        public HandlerParameters Parameters { get; set; }
 
         public DatabaseEngine() { }
 
-        public DatabaseEngine(List<ParameterType> parms, Action<string, string> logger = null)
+        public DatabaseEngine(HandlerParameters parms, Action<string, string> logger = null)
         {
             Parameters = parms;
             Logger = logger;
         }
 
-        public DbDataReader ExecuteCommand(DbConnection con, String cmdText, bool isStoredProc = false, bool isDryRun = false)
+        public void ExecuteCommand(bool isDryRun = false)
         {
+            DbConnection con = BuildConnection();
+
+            String cmdText = Parameters.Query;
+            bool isStoredProc = false;
+            if (!String.IsNullOrEmpty(Parameters.StoredProcedure))
+            {
+                cmdText = Parameters.StoredProcedure;
+                isStoredProc = true;
+            }
+
+
             DbCommand command = BuildCommand(con, cmdText);
 
-//            String connString = con.ConnectionString;
-//            connString = Regex.Replace(connString, @";password=.*?;", @";password=********;");
-//            OnStepProgress("ExecuteQuery", "Connection String - " + connString);
+            String connString = con.ConnectionString;
+            connString = Regex.Replace(connString, @";password=.*?;", @";password=********;");
+            Logger?.Invoke("ExecuteCommand", "Connection String - " + connString);
 
             if (isStoredProc)
             {
@@ -40,7 +52,7 @@ namespace Synapse.Handlers.Sql
 
             if (Parameters != null)
             {
-                foreach (ParameterType parameter in Parameters)
+                foreach (ParameterType parameter in Parameters.Parameters)
                 {
                     AddParameter(command, parameter.Name, parameter.Value, parameter.Type, parameter.Size, parameter.Direction);
                     Logger?.Invoke("ExecuteCommand", parameter.Direction + " Paramter - [" + parameter.Name + "] = [" + parameter.Value + "]");
@@ -73,6 +85,8 @@ namespace Synapse.Handlers.Sql
                     {
                         ParseParameter(parameter);
                     }
+
+                    ParseResults(reader);
                 }
             }
             catch (Exception e)
@@ -81,7 +95,17 @@ namespace Synapse.Handlers.Sql
                 throw e;
             }
 
-            return reader;
+            finally
+            {
+                con.Close();
+                con.Dispose();
+            }
+        }
+
+        public virtual DbConnection BuildConnection()
+        {
+            Logger?.Invoke("BuildConnection", @"Unknown database type.  Can not build connection.");
+            return null;
         }
 
         public virtual DbParameter AddParameter(DbCommand cmd, String name, String value, SqlParamterTypes type, int size, System.Data.ParameterDirection direction)
@@ -113,26 +137,6 @@ namespace Synapse.Handlers.Sql
                 int totalSets = 0;
                 do
                 {
-                    if (!String.IsNullOrWhiteSpace(fileName))
-                    {
-                        String setFileName = fileName;
-                        bool doAppend = appendToFile;
-                        if (totalSets > 0 && !mergeResults)
-                        {
-                            String filePath = System.IO.Path.GetDirectoryName(fileName);
-                            String fileRoot = System.IO.Path.GetFileNameWithoutExtension(fileName);
-                            String fileExt = System.IO.Path.GetExtension(fileName);
-                            setFileName = String.Format(@"{0}\{1}_{2:D3}{3}", filePath, fileRoot, (totalSets + 1), fileExt);
-                        }
-
-                        // Merge Results Means Append To File
-                        if (totalSets > 0 && mergeResults)
-                            doAppend = true;
-
-                        writer = new StreamWriter(setFileName, doAppend);
-                        Logger?.Invoke("Results", "OutputFile - [" + setFileName + "]");
-                    }
-
                     StringBuilder sb = new StringBuilder();
                     if (showColumnNames)
                     {
@@ -173,9 +177,7 @@ namespace Synapse.Handlers.Sql
                     totalSets++;
 
                 } while (reader.NextResult());
-
             }
-
         }
 
         protected void WriteParameter(String name, Object value, String fileName, bool showColumnNames, bool appendToFile)
@@ -228,7 +230,7 @@ namespace Synapse.Handlers.Sql
             ParameterType retParam = null;
 
             if (Parameters != null)
-                foreach (ParameterType param in Parameters)
+                foreach (ParameterType param in Parameters.Parameters)
                     if (param.Name.Equals(name))
                     {
                         retParam = param;

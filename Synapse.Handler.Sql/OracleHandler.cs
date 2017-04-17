@@ -35,21 +35,7 @@ public class OracleHandler : HandlerRuntimeBase
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
         OracleDatabaseEngine db = new OracleDatabaseEngine(config, parameters, Logger);
-
-        String command = parameters.Query;
-        bool isStoredProc = false;
-        if (!String.IsNullOrEmpty(parameters.StoredProcedure))
-        {
-            command = parameters.StoredProcedure;
-            isStoredProc = true;
-        }
-
-        OracleConnection con = db.BuildConnection();
-        DbDataReader reader = db.ExecuteCommand(con, command, isStoredProc, false);
-        db.ParseResults(reader);
-
-        con.Close();
-        con.Dispose();
+        db.ExecuteCommand(false);
 
         return result;
     }

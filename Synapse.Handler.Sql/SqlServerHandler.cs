@@ -33,21 +33,7 @@ public class SqlServerHandler : HandlerRuntimeBase
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
         SqlServerDatabaseEngine db = new SqlServerDatabaseEngine(config, parameters, Logger);
-
-        String command = parameters.Query;
-        bool isStoredProc = false;
-        if (!String.IsNullOrEmpty(parameters.StoredProcedure))
-        {
-            command = parameters.StoredProcedure;
-            isStoredProc = true;
-        }
-
-        SqlConnection con = db.BuildConnection();
-        DbDataReader reader = db.ExecuteCommand(con, command, isStoredProc, false);
-        db.ParseResults(reader);
-
-        con.Close();
-        con.Dispose();
+        db.ExecuteCommand(false);
 
         return result;
     }
