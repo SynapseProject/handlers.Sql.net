@@ -34,7 +34,7 @@ public class OracleHandler : HandlerRuntimeBase
         if (startInfo.Parameters != null)
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
-        OracleDatabaseEngine db = new OracleDatabaseEngine(config, parameters);
+        OracleDatabaseEngine db = new OracleDatabaseEngine(config, parameters, Logger);
 
         String command = parameters.Query;
         bool isStoredProc = false;
@@ -54,6 +54,10 @@ public class OracleHandler : HandlerRuntimeBase
         return result;
     }
 
+    public void Logger(string context, string message)
+    {
+        OnLogMessage(context, message);
+    }
 
 }
 

@@ -32,7 +32,7 @@ public class SqlServerHandler : HandlerRuntimeBase
         if (startInfo.Parameters != null)
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
-        SqlServerDatabaseEngine db = new SqlServerDatabaseEngine(config, parameters);
+        SqlServerDatabaseEngine db = new SqlServerDatabaseEngine(config, parameters, Logger);
 
         String command = parameters.Query;
         bool isStoredProc = false;
@@ -50,6 +50,11 @@ public class SqlServerHandler : HandlerRuntimeBase
         con.Dispose();
 
         return result;
+    }
+
+    public void Logger(string context, string message)
+    {
+        OnLogMessage(context, message);
     }
 }
 

@@ -10,13 +10,16 @@ namespace Synapse.Handlers.Sql
 {
     public class DatabaseEngine
     {
+        public Action<string, string> Logger { get; set; }
+
         public List<ParameterType> Parameters { get; set; }
 
         public DatabaseEngine() { }
 
-        public DatabaseEngine(List<ParameterType> parms)
+        public DatabaseEngine(List<ParameterType> parms, Action<string, string> logger = null)
         {
             Parameters = parms;
+            Logger = logger;
         }
 
         public DbDataReader ExecuteCommand(DbConnection con, String cmdText, bool isStoredProc = false, bool isDryRun = false)
@@ -30,17 +33,17 @@ namespace Synapse.Handlers.Sql
             if (isStoredProc)
             {
                 command.CommandType = System.Data.CommandType.StoredProcedure;
-//                OnStepProgress("ExecuteQuery", "Stored Procedure - " + command.CommandText);
+                Logger?.Invoke("ExecuteCommand", "Stored Procuedre = " + command.CommandText);
             }
             else
-//                OnStepProgress("ExecuteQuery", "Query - " + command.CommandText);
+                Logger?.Invoke("ExecuteCommand", "Query - " + command.CommandText);
 
             if (Parameters != null)
             {
                 foreach (ParameterType parameter in Parameters)
                 {
                     AddParameter(command, parameter.Name, parameter.Value, parameter.Type, parameter.Size, parameter.Direction);
-//                    OnStepProgress("ExeucteQuery", parameter.Direction + " Paramter - [" + parameter.Name + "] = [" + parameter.Value + "]");
+                    Logger?.Invoke("ExecuteCommand", parameter.Direction + " Paramter - [" + parameter.Name + "] = [" + parameter.Value + "]");
                 }
             }
 
@@ -50,8 +53,8 @@ namespace Synapse.Handlers.Sql
                 con.Open();
                 if (isDryRun)
                 {
-//                    OnStepProgress("ExecuteQuery", "Database connection was sucessful.");
-//                    OnStepProgress("ExecuteQuery", "IsDryRun flag is set.  Query or StoredProcedure will not be executed.");
+                    Logger?.Invoke("ExecuteQuery", "Database connection was sucessful.");
+                    Logger?.Invoke("ExecuteQuery", "IsDryRun flag is set.  Query or StoredProcedure will not be executed.");
                     con.Close();
                 }
                 else
@@ -74,7 +77,7 @@ namespace Synapse.Handlers.Sql
             }
             catch (Exception e)
             {
-//                OnStepProgress("ExecuteQuery", "ERROR : " + e.Message);
+                Logger?.Invoke("ExecuteQuery", "ERROR : " + e.Message);
                 throw e;
             }
 
@@ -83,24 +86,23 @@ namespace Synapse.Handlers.Sql
 
         public virtual DbParameter AddParameter(DbCommand cmd, String name, String value, SqlParamterTypes type, int size, System.Data.ParameterDirection direction)
         {
-//            OnStepProgress("BuildParameter", @"Unknown database type.  Can not create parameter.");
+            Logger?.Invoke("AddParameter", @"Unknown database type.  Can not create parameter.");
             return null;
         }
 
         public virtual DbCommand BuildCommand(DbConnection con, String commandText)
         {
-            //            OnStepProgress("BuildCommand", @"Unknown database type.  Can not create command.");
+            Logger?.Invoke("BuildCommand", @"Unknown database type.  Can not create command.");
             throw new Exception("Unknown Connection Type [" + con.GetType() + "]");
         }
 
         public virtual void ParseParameter(DbParameter parameter)
         {
-            //TODO : Implement Me
-//            if (parameter.Direction != System.Data.ParameterDirection.Input)
-//                OnStepProgress("Results", parameter.Direction + " Parameter - [" + parameter.ParameterName + "] = [" + parameter.Value + "]");
+            if (parameter.Direction != System.Data.ParameterDirection.Input)
+                Logger?.Invoke("Results", parameter.Direction + " Parameter - [" + parameter.ParameterName + "] = [" + parameter.Value + "]");
         }
 
-        public void ParseResults(DbDataReader reader, String fileName = null, String delimeter = null, bool showColumnNames = true, bool showResults = true, bool appendToFile = true, bool mergeResults = false)
+        public void ParseResults(DbDataReader reader, String fileName = null, String delimeter = ",", bool showColumnNames = true, bool showResults = true, bool appendToFile = true, bool mergeResults = false)
         {
             StreamWriter writer = null;
             if (reader == null)
@@ -128,7 +130,7 @@ namespace Synapse.Handlers.Sql
                             doAppend = true;
 
                         writer = new StreamWriter(setFileName, doAppend);
-//                        OnStepProgress("Results", "OutputFile - [" + setFileName + "]");
+                        Logger?.Invoke("Results", "OutputFile - [" + setFileName + "]");
                     }
 
                     StringBuilder sb = new StringBuilder();
@@ -161,7 +163,7 @@ namespace Synapse.Handlers.Sql
                         WriteRow(sb.ToString(), writer, showResults);
                     }
 
-//                    OnStepProgress("Results", "Total Records : " + totalRows);
+                    Logger?.Invoke("Results", "Total Records : " + totalRows);
 
                     if (writer != null)
                     {
@@ -183,7 +185,7 @@ namespace Synapse.Handlers.Sql
             if (!String.IsNullOrWhiteSpace(fileName))
             {
                 writer = new StreamWriter(fileName, appendToFile);
-//                OnStepProgress("Results", "OutputFile - [" + fileName + "]");
+                Logger?.Invoke("Results", "OutputFile - [" + fileName + "]");
 
                 if (showColumnNames)
                     writer.WriteLine(name);
@@ -211,13 +213,13 @@ namespace Synapse.Handlers.Sql
         {
             if (file == null)
             {
-//                OnStepProgress("Results", line);
+                Logger?.Invoke("Results", line);
             }
             else
             {
                 file.WriteLine(line);
-//                if (showResults)
-//                   OnStepProgress("Results", line);
+                if (showResults)
+                    Logger?.Invoke("Results", line);
             }
         }
 

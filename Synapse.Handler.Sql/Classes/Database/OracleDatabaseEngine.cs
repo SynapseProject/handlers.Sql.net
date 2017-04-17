@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Data.Common;
 
 using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
 
 namespace Synapse.Handlers.Sql
 {
@@ -14,7 +17,7 @@ namespace Synapse.Handlers.Sql
 
         public OracleDatabaseEngine() { }
 
-        public OracleDatabaseEngine(OracleHandlerConfig config, HandlerParameters parameters) : base(parameters.Parameters)
+        public OracleDatabaseEngine(OracleHandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters.Parameters, logger)
         {
             this.Config = config;            
         }
@@ -35,6 +38,66 @@ namespace Synapse.Handlers.Sql
 
             return con;
         }
+
+        public override DbParameter AddParameter(DbCommand cmd, String name, String value, SqlParamterTypes type, int size, System.Data.ParameterDirection direction)
+        {
+            OracleParameter param = new OracleParameter();
+            OracleCommand command = (OracleCommand)cmd;
+            param.ParameterName = name;
+            param.Direction = direction;
+            param.Value = value;
+            param.Size = size;
+
+            int enumValue = (int)type;
+            if (enumValue >= 100)
+                param.OracleDbType = (OracleDbType)Enum.Parse(typeof(OracleDbType), type.ToString());
+            else
+                param.DbType = (System.Data.DbType)Enum.Parse(typeof(System.Data.DbType), type.ToString());
+
+            // For Oracle Functions, ReturnValue Must Be First Parameter
+            if (param.Direction == System.Data.ParameterDirection.ReturnValue)
+                command.Parameters.Insert(0, param);
+            else
+                command.Parameters.Add(param);
+            return param;
+        }
+
+        public override DbCommand BuildCommand(DbConnection con, String commandText)
+        {
+            OracleCommand command = new OracleCommand();
+            command.Connection = (OracleConnection)con;
+            command.CommandText = commandText;
+            return command;
+        }
+
+        public override void ParseParameter(DbParameter parameter)
+        {
+            OracleParameter param = (OracleParameter)parameter;
+            ParameterType wfpParam = GetParameterByName(parameter.ParameterName);
+
+            String fileName = null;
+            String delimeter = ",";
+            bool showResults = true;
+            bool showColumnNames = true;
+            bool appendToFile = false;
+            bool mergeResults = false;
+
+            if (parameter.Direction != System.Data.ParameterDirection.Input)
+            {
+                Logger?.Invoke("Results", param.Direction + " Parameter - [" + param.ParameterName + "] = [" + param.Value + "]");
+
+                if (param.OracleDbType == OracleDbType.RefCursor)
+                {
+                    OracleDataReader reader = ((OracleRefCursor)param.Value).GetDataReader();
+                    ParseResults(reader, fileName, delimeter, showColumnNames, showResults, appendToFile, mergeResults);
+                }
+                else
+                {
+                    WriteParameter(parameter.ParameterName, parameter.Value, fileName, showColumnNames, appendToFile);
+                }
+            }
+        }
+
 
     }
 }
