@@ -15,7 +15,7 @@ using Synapse.Core.Utilities;
 
 namespace Synapse.Handlers.Sql
 {
-    public class OracleHandlerConfig
+    public class HandlerConfig
     {
         [XmlElement]
         public string User { get; set; }

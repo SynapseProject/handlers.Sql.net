@@ -13,11 +13,11 @@ namespace Synapse.Handlers.Sql
 {
     public class OracleDatabaseEngine : DatabaseEngine
     {
-        OracleHandlerConfig Config;
+        HandlerConfig Config;
 
         public OracleDatabaseEngine() { }
 
-        public OracleDatabaseEngine(OracleHandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters.Parameters, logger)
+        public OracleDatabaseEngine(HandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters.Parameters, logger)
         {
             this.Config = config;            
         }

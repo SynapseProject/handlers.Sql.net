@@ -15,14 +15,8 @@ using Synapse.Core.Utilities;
 
 namespace Synapse.Handlers.Sql
 {
-    public class SqlServerHandlerConfig
+    public class SqlServerHandlerConfig : HandlerConfig
     {
-        [XmlElement]
-        public string User { get; set; }
-        [XmlElement]
-        public string Password { get; set; }
-        [XmlElement]
-        public string DataSource { get; set; }
         [XmlElement]
         public bool IntegratedSecurity { get; set; }
         [XmlElement]

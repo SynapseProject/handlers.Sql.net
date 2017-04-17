@@ -17,12 +17,12 @@ using Synapse.Handlers.Sql;
 
 public class OracleHandler : HandlerRuntimeBase
 {
-    OracleHandlerConfig config = null;
+    HandlerConfig config = null;
     HandlerParameters parameters = null;
 
     public override IHandlerRuntime Initialize(string configStr)
     {
-        config = this.DeserializeOrDefault<OracleHandlerConfig>(configStr);
+        config = this.DeserializeOrDefault<HandlerConfig>(configStr);
         return base.Initialize(configStr);
     }
 

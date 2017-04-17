@@ -58,7 +58,7 @@
     <Compile Include="Classes\Database\OracleDatabaseEngine.cs" />
     <Compile Include="Classes\Enum\SqlParameterType.cs" />
     <Compile Include="Classes\SqlServerHandlerConfig.cs" />
-    <Compile Include="Classes\OracleHandlerConfig.cs" />
+    <Compile Include="Classes\HandlerConfig.cs" />
     <Compile Include="Classes\HandlerParameters.cs" />
     <Compile Include="SqlServerHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
