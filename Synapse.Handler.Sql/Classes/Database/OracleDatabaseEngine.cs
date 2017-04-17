@@ -75,13 +75,6 @@ namespace Synapse.Handlers.Sql
             OracleParameter param = (OracleParameter)parameter;
             ParameterType wfpParam = GetParameterByName(parameter.ParameterName);
 
-            String fileName = null;
-            String delimeter = ",";
-            bool showResults = true;
-            bool showColumnNames = true;
-            bool appendToFile = false;
-            bool mergeResults = false;
-
             if (parameter.Direction != System.Data.ParameterDirection.Input)
             {
                 Logger?.Invoke("Results", param.Direction + " Parameter - [" + param.ParameterName + "] = [" + param.Value + "]");
@@ -89,11 +82,7 @@ namespace Synapse.Handlers.Sql
                 if (param.OracleDbType == OracleDbType.RefCursor)
                 {
                     OracleDataReader reader = ((OracleRefCursor)param.Value).GetDataReader();
-                    ParseResults(reader, fileName, delimeter, showColumnNames, showResults, appendToFile, mergeResults);
-                }
-                else
-                {
-                    WriteParameter(parameter.ParameterName, parameter.Value, fileName, showColumnNames, appendToFile);
+                    ParseResults(reader);
                 }
             }
         }

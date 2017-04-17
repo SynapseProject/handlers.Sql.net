@@ -50,7 +50,7 @@ namespace Synapse.Handlers.Sql
             else
                 Logger?.Invoke("ExecuteCommand", "Query - " + command.CommandText);
 
-            if (Parameters != null)
+            if (Parameters.Parameters != null)
             {
                 foreach (ParameterType parameter in Parameters.Parameters)
                 {
@@ -126,7 +126,7 @@ namespace Synapse.Handlers.Sql
                 Logger?.Invoke("Results", parameter.Direction + " Parameter - [" + parameter.ParameterName + "] = [" + parameter.Value + "]");
         }
 
-        public void ParseResults(DbDataReader reader, String fileName = null, String delimeter = ",", bool showColumnNames = true, bool showResults = true, bool appendToFile = true, bool mergeResults = false)
+        public void ParseResults(DbDataReader reader)
         {
             StreamWriter writer = null;
             if (reader == null)
@@ -138,16 +138,15 @@ namespace Synapse.Handlers.Sql
                 do
                 {
                     StringBuilder sb = new StringBuilder();
-                    if (showColumnNames)
+
+                    // Display Column Headers
+                    for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            sb.Append(reader.GetName(i));
-                            if (i != (reader.FieldCount - 1))
-                                sb.Append(delimeter);
-                        }
-                        WriteRow(sb.ToString(), writer, showResults);
+                        sb.Append(reader.GetName(i));
+                        if (i != (reader.FieldCount - 1))
+                            sb.Append(",");
                     }
+                    Logger?.Invoke("Results", sb.ToString());
 
 
                     int totalRows = 0;
@@ -160,11 +159,11 @@ namespace Synapse.Handlers.Sql
                             String field = FormatData(reader.GetFieldType(i), reader.GetValue(i));
                             sb.Append(field);
                             if (i != (reader.FieldCount - 1))
-                                sb.Append(delimeter);
+                                sb.Append(",");
                         }
 
                         totalRows++;
-                        WriteRow(sb.ToString(), writer, showResults);
+                        Logger?.Invoke("Results", sb.ToString());
                     }
 
                     Logger?.Invoke("Results", "Total Records : " + totalRows);
@@ -180,27 +179,6 @@ namespace Synapse.Handlers.Sql
             }
         }
 
-        protected void WriteParameter(String name, Object value, String fileName, bool showColumnNames, bool appendToFile)
-        {
-            StreamWriter writer = null;
-
-            if (!String.IsNullOrWhiteSpace(fileName))
-            {
-                writer = new StreamWriter(fileName, appendToFile);
-                Logger?.Invoke("Results", "OutputFile - [" + fileName + "]");
-
-                if (showColumnNames)
-                    writer.WriteLine(name);
-                if (value == null)
-                    writer.WriteLine("");
-                else
-                    writer.WriteLine(value.ToString());
-
-                writer.Close();
-                writer.Dispose();
-            }
-        }
-
         private String FormatData(Type type, Object field)
         {
             String data = field.ToString();
@@ -209,20 +187,6 @@ namespace Synapse.Handlers.Sql
                 data = @"""" + field.ToString() + @"""";
 
             return data;
-        }
-
-        private void WriteRow(String line, StreamWriter file, bool showResults = true)
-        {
-            if (file == null)
-            {
-                Logger?.Invoke("Results", line);
-            }
-            else
-            {
-                file.WriteLine(line);
-                if (showResults)
-                    Logger?.Invoke("Results", line);
-            }
         }
 
         protected ParameterType GetParameterByName(String name)

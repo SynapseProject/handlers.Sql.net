@@ -74,16 +74,10 @@ namespace Synapse.Handlers.Sql
             SqlParameter param = (SqlParameter)parameter;
             ParameterType wfpParam = GetParameterByName(parameter.ParameterName);
 
-            String fileName = null;
-            bool showColumnNames = true;
-            bool appendToFile = false;
             if (parameter.Direction != System.Data.ParameterDirection.Input)
             {
                 Logger?.Invoke("Results", param.Direction + " Parameter - [" + param.ParameterName + "] = [" + param.Value + "]");
-                WriteParameter(parameter.ParameterName, parameter.Value, fileName, showColumnNames, appendToFile);
             }
         }
-
-
     }
 }
