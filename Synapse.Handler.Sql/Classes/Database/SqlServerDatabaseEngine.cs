@@ -18,7 +18,10 @@ namespace Synapse.Handlers.Sql
 
         public SqlServerDatabaseEngine(SqlServerHandlerConfig config, HandlerParameters parameters, Action<string, string> logger = null) : base(parameters, logger)
         {
-            this.Config = config;            
+            this.Config = config;
+            this.OutputType = config.OutputType;
+            this.OutputFile = config.OutputFile;
+            this.parser = this.GetParser(config.OutputType, config.OutputFile);
         }
 
         public override DbConnection BuildConnection()
@@ -72,12 +75,7 @@ namespace Synapse.Handlers.Sql
         public override void ParseParameter(DbParameter parameter)
         {
             SqlParameter param = (SqlParameter)parameter;
-            ParameterType wfpParam = GetParameterByName(parameter.ParameterName);
-
-            if (parameter.Direction != System.Data.ParameterDirection.Input)
-            {
-                Logger?.Invoke("Results", param.Direction + " Parameter - [" + param.ParameterName + "] = [" + param.Value + "]");
-            }
+            parser.Parse(param.Direction, param.ParameterName, param.Value);
         }
     }
 }

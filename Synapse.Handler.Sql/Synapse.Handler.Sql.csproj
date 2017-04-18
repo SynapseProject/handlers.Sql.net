@@ -41,6 +41,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,8 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Database\DatabaseEngine.cs" />
+    <Compile Include="Classes\Database\Parser\DBParser.cs" />
     <Compile Include="Classes\Database\SqlServerDatabaseEngine.cs" />
     <Compile Include="Classes\Database\OracleDatabaseEngine.cs" />
+    <Compile Include="Classes\Enum\OutputTypeType.cs" />
     <Compile Include="Classes\Enum\SqlParameterType.cs" />
     <Compile Include="Classes\SqlServerHandlerConfig.cs" />
     <Compile Include="Classes\HandlerConfig.cs" />

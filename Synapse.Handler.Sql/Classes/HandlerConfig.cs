@@ -23,6 +23,10 @@ namespace Synapse.Handlers.Sql
         public string Password { get; set; }
         [XmlElement]
         public string DataSource { get; set; }
+        [XmlElement]
+        public OutputTypeType OutputType { get; set; }
+        [XmlElement]
+        public string OutputFile { get; set; }
     }
 
 }

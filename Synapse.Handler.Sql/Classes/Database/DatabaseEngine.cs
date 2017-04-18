@@ -12,8 +12,10 @@ namespace Synapse.Handlers.Sql
     public class DatabaseEngine
     {
         public Action<string, string> Logger { get; set; }
-
         public HandlerParameters Parameters { get; set; }
+        public OutputTypeType OutputType { get; set; }
+        public String OutputFile { get; set; }
+        protected DBParser parser = new DBParser();
 
         public DatabaseEngine() { }
 
@@ -122,71 +124,14 @@ namespace Synapse.Handlers.Sql
 
         public virtual void ParseParameter(DbParameter parameter)
         {
-            if (parameter.Direction != System.Data.ParameterDirection.Input)
-                Logger?.Invoke("Results", parameter.Direction + " Parameter - [" + parameter.ParameterName + "] = [" + parameter.Value + "]");
+            parser.Logger = Logger;
+            parser.Parse(parameter.Direction, parameter.ParameterName, parameter.Value);
         }
 
         public void ParseResults(DbDataReader reader)
         {
-            StreamWriter writer = null;
-            if (reader == null)
-                return;
-
-            if (reader.HasRows)
-            {
-                int totalSets = 0;
-                do
-                {
-                    StringBuilder sb = new StringBuilder();
-
-                    // Display Column Headers
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        sb.Append(reader.GetName(i));
-                        if (i != (reader.FieldCount - 1))
-                            sb.Append(",");
-                    }
-                    Logger?.Invoke("Results", sb.ToString());
-
-
-                    int totalRows = 0;
-                    while (reader.Read())
-                    {
-                        sb.Clear();
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            Type type = reader[i].GetType();
-                            String field = FormatData(reader.GetFieldType(i), reader.GetValue(i));
-                            sb.Append(field);
-                            if (i != (reader.FieldCount - 1))
-                                sb.Append(",");
-                        }
-
-                        totalRows++;
-                        Logger?.Invoke("Results", sb.ToString());
-                    }
-
-                    Logger?.Invoke("Results", "Total Records : " + totalRows);
-
-                    if (writer != null)
-                    {
-                        writer.Close();
-                    }
-
-                    totalSets++;
-
-                } while (reader.NextResult());
-            }
-        }
-
-        private String FormatData(Type type, Object field)
-        {
-            String data = field.ToString();
-
-            if (type == typeof(String))
-                data = @"""" + field.ToString() + @"""";
-
-            return data;
+            parser.Logger = Logger;
+            parser.Parse(reader);
         }
 
         protected ParameterType GetParameterByName(String name)
@@ -202,6 +147,26 @@ namespace Synapse.Handlers.Sql
                     }
 
             return retParam;
+        }
+
+        protected DBParser GetParser(OutputTypeType outputType, String outputFile = null)
+        {
+            DBParser parser = new DBParser(outputFile);
+            switch (outputType)
+            {
+                case OutputTypeType.Xml:
+                    parser = new DBParser(outputFile);
+                    break;
+                case OutputTypeType.Json:
+                    parser = new DBParser(outputFile);
+                    break;
+                case OutputTypeType.Yaml:
+                    parser = new DBParser(outputFile);
+                    break;
+            }
+
+            parser.Logger = Logger;
+            return parser;
         }
     }
 }
