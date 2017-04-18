@@ -15,7 +15,7 @@ namespace Synapse.Handlers.Sql
         public HandlerParameters Parameters { get; set; }
         public OutputTypeType OutputType { get; set; }
         public String OutputFile { get; set; }
-        protected DBParser parser = new DBParser();
+        protected DbParser parser = new DbParser();
 
         public DatabaseEngine() { }
 
@@ -82,6 +82,7 @@ namespace Synapse.Handlers.Sql
                         reader = command.ExecuteReader();
                     }
 
+                    parser.Open();
                     // Log Any Output Parameters From Call
                     foreach (DbParameter parameter in command.Parameters)
                     {
@@ -89,6 +90,7 @@ namespace Synapse.Handlers.Sql
                     }
 
                     ParseResults(reader);
+                    parser.Close();
                 }
             }
             catch (Exception e)
@@ -149,19 +151,19 @@ namespace Synapse.Handlers.Sql
             return retParam;
         }
 
-        protected DBParser GetParser(OutputTypeType outputType, String outputFile = null)
+        protected DbParser GetParser(OutputTypeType outputType, String outputFile = null)
         {
-            DBParser parser = new DBParser(outputFile);
+            DbParser parser = new DbParser(outputFile);
             switch (outputType)
             {
                 case OutputTypeType.Xml:
-                    parser = new DBParser(outputFile);
+                    parser = new XmlDbParser(outputFile);
                     break;
                 case OutputTypeType.Json:
-                    parser = new DBParser(outputFile);
+                    parser = new DbParser(outputFile);
                     break;
                 case OutputTypeType.Yaml:
-                    parser = new DBParser(outputFile);
+                    parser = new DbParser(outputFile);
                     break;
             }
 
