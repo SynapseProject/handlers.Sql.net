@@ -79,12 +79,13 @@ namespace Synapse.Handlers.Sql
 
             if (parameter.Direction != System.Data.ParameterDirection.Input)
             {
-                parser.Parse(param.Direction, param.ParameterName, param.Value);
                 if (param.OracleDbType == OracleDbType.RefCursor)
                 {
                     OracleDataReader reader = ((OracleRefCursor)param.Value).GetDataReader();
                     parser.Parse(reader);
                 }
+                else
+                    parser.Parse(param.Direction, param.ParameterName, param.Value);
             }
         }
 

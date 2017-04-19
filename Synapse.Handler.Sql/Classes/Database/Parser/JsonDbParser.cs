@@ -30,6 +30,7 @@ namespace Synapse.Handlers.Sql
         protected override String FormatFileClose()
         {
             StringBuilder line = new StringBuilder();
+            line.AppendLine();
             line.AppendLine("  }");
             line.AppendLine("}");
             return line.ToString();
@@ -88,6 +89,9 @@ namespace Synapse.Handlers.Sql
                 isFirstResultSet = false;
                 line.AppendLine("    \"ResultSet\": [");
             }
+            else
+                line.AppendLine(",");
+
             line.AppendLine("      {");
 
             return line.ToString();
@@ -124,7 +128,7 @@ namespace Synapse.Handlers.Sql
 
         protected override String FormatResultSetClose(DbDataReader reader)
         {
-            return Environment.NewLine + "      }" + Environment.NewLine;
+            return Environment.NewLine + "      }";
         }
     }
 }

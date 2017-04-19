@@ -11,7 +11,6 @@ namespace Synapse.Handlers.Sql
 {
     class YamlDbParser : DbParser
     {
-        private bool isFirstParameter = true;
         private bool isFirstResultSet = true;
         private bool isFirstRow = true;
 
@@ -32,21 +31,24 @@ namespace Synapse.Handlers.Sql
 
         protected override String FormatParameterOpen(ParameterDirection direction, String name, Object value)
         {
-            if (isFirstParameter)
+            StringBuilder line = new StringBuilder();
+            if (isFirstResultSet)
             {
-                isFirstParameter = false;
-                return "  Parameter:" + Environment.NewLine;
+                isFirstResultSet = false;
+                line.AppendLine("  ResultSet:");
             }
-            else
-                return null;
+            line.AppendLine("  - Row:");
+
+            return line.ToString();
         }
 
         protected override String FormatParameter(ParameterDirection direction, String name, Object value)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("  - Direction: " + direction);
-            sb.AppendLine("    Name: " + name);
-            sb.AppendLine("    Value: " + value);
+            sb.AppendLine("    - Name: " + name);
+            sb.AppendLine("      Direction: " + direction);
+            sb.AppendLine("      Type: " + value.GetType());
+            sb.AppendLine("      Value: " + value);
             return sb.ToString();
         }
 

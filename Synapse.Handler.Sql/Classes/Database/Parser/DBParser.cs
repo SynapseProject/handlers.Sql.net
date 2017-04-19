@@ -69,8 +69,8 @@ namespace Synapse.Handlers.Sql
 
                 } while (reader.NextResult());
 
-                if (this.GetType() == typeof(JsonDbParser))
-                    WriteLine("    ]" + Environment.NewLine);
+//                if (this.GetType() == typeof(JsonDbParser))
+//                    WriteLine("    ]" + Environment.NewLine);
             }
 
             return _exitData.ToString();
@@ -88,13 +88,13 @@ namespace Synapse.Handlers.Sql
 
         protected virtual String FormatParameterOpen(ParameterDirection direction, String name, Object value)
         {
-            return @"PARAMETER_DIRECTION, PARAMETER_NAME, PARAMETER_VALUE" + Environment.NewLine;
+            return "\"Name\",\"Direction\",\"Type\",\"Value\"" + Environment.NewLine;
         }
 
         protected virtual String FormatParameter(ParameterDirection direction, String name, Object value)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(direction + ",\"" + name + "\",\"" + value + "\"");
+            sb.AppendLine("\"" + name + "\",\"" + direction + "\",\"" + value.GetType() + "\",\"" + value + "\"");
             return sb.ToString();
         }
 
@@ -109,7 +109,7 @@ namespace Synapse.Handlers.Sql
 
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                row.Append(reader.GetName(i));
+                row.Append(FormatData(typeof(String), reader.GetName(i)));
                 if (i != (reader.FieldCount - 1))
                     row.Append(",");
             }
@@ -154,7 +154,7 @@ namespace Synapse.Handlers.Sql
         {
             String data = field.ToString();
 
-            if (type == typeof(String))
+            if (data.Contains(" ") || data.Contains(",") || type == typeof(String))
                 data = @"""" + field.ToString() + @"""";
 
             return data;
