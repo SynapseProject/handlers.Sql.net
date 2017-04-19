@@ -14,6 +14,9 @@ namespace Synapse.Handlers.Sql
         public Action<string, string> Logger { get; set; }
         public String OutputFile { get; set; }
 
+        public int OutputParameters { get; set; } = 0;
+        public bool HasResultSet { get; set; } = false;
+
         protected StreamWriter _file;
         protected StringBuilder _exitData = new StringBuilder();
 
@@ -65,6 +68,9 @@ namespace Synapse.Handlers.Sql
                     totalSets++;
 
                 } while (reader.NextResult());
+
+                if (this.GetType() == typeof(JsonDbParser))
+                    WriteLine("    ]" + Environment.NewLine);
             }
 
             return _exitData.ToString();
@@ -82,13 +88,13 @@ namespace Synapse.Handlers.Sql
 
         protected virtual String FormatParameterOpen(ParameterDirection direction, String name, Object value)
         {
-            return @"PARAMETER_DIRECTION, PARAMETER_NAME, PARAMETER_VALUE";
+            return @"PARAMETER_DIRECTION, PARAMETER_NAME, PARAMETER_VALUE" + Environment.NewLine;
         }
 
         protected virtual String FormatParameter(ParameterDirection direction, String name, Object value)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(direction + ",\"" + name + "\",\"" + value + "\"");
+            sb.AppendLine(direction + ",\"" + name + "\",\"" + value + "\"");
             return sb.ToString();
         }
 
@@ -107,6 +113,7 @@ namespace Synapse.Handlers.Sql
                 if (i != (reader.FieldCount - 1))
                     row.Append(",");
             }
+            row.AppendLine();
 
             return row.ToString();
         }
@@ -123,6 +130,7 @@ namespace Synapse.Handlers.Sql
                 if (i != (reader.FieldCount - 1))
                     row.Append(",");
             }
+            row.AppendLine();
 
             return row.ToString();
         }
@@ -156,13 +164,13 @@ namespace Synapse.Handlers.Sql
         {
             if (row != null)
             {
-                String[] lines = row.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                String[] lines = row.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (String line in lines)
                     Logger?.Invoke("ResultSet", line);
                 if (_file != null)
-                    _file.WriteLine(row);
+                    _file.Write(row);
                 else
-                    _exitData.AppendLine(row);
+                    _exitData.Append(row);
             }
 
         }

@@ -16,7 +16,7 @@ namespace Synapse.Handlers.Sql
 
         protected override String FormatFileOpen()
         {
-            return "<Results>";
+            return "<Results>" + Environment.NewLine;
         }
 
         protected override String FormatFileClose()
@@ -28,7 +28,7 @@ namespace Synapse.Handlers.Sql
 
         protected override String FormatParameterOpen(ParameterDirection direction, String name, Object value)
         {
-            return @"    <Parameter>";
+            return @"    <Parameter>" + Environment.NewLine;
         }
 
         protected override String FormatParameter(ParameterDirection direction, String name, Object value)
@@ -36,18 +36,18 @@ namespace Synapse.Handlers.Sql
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("        <Direction>" + direction + "</Direction>");
             sb.AppendLine("        <Name>" + name + "</Name>");
-            sb.Append("        <Value>" + value + "</Value>");
+            sb.AppendLine("        <Value>" + value + "</Value>");
             return sb.ToString();
         }
 
         protected override String FormatParameterClose(ParameterDirection direction, String name, Object value)
         {
-            return @"    </Parameter>";
+            return @"    </Parameter>" + Environment.NewLine;
         }
 
         protected override String FormatResultSetOpen(DbDataReader reader)
         {
-            return "    <ResultSet>";
+            return "    <ResultSet>" + Environment.NewLine;
         }
 
         protected override String FormatResultSetRow(DbDataReader reader)
@@ -61,14 +61,14 @@ namespace Synapse.Handlers.Sql
                 String columnName = reader.GetName(i);
                 row.AppendLine("            <" + columnName + ">" + field + @"</" + columnName + ">");
             }
-            row.Append("        </Row>");
+            row.AppendLine("        </Row>");
 
             return row.ToString();
         }
 
         protected override String FormatResultSetClose(DbDataReader reader)
         {
-            return "    </ResultSet>";
+            return "    </ResultSet>" + Environment.NewLine;
         }
     }
 }

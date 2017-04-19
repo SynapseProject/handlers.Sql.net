@@ -20,7 +20,7 @@ namespace Synapse.Handlers.Sql
 
         protected override String FormatFileOpen()
         {
-            return "Results:";
+            return "Results:" + Environment.NewLine;
         }
 
         protected override String FormatFileClose()
@@ -35,7 +35,7 @@ namespace Synapse.Handlers.Sql
             if (isFirstParameter)
             {
                 isFirstParameter = false;
-                return "  Parameter:";
+                return "  Parameter:" + Environment.NewLine;
             }
             else
                 return null;
@@ -46,7 +46,7 @@ namespace Synapse.Handlers.Sql
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("  - Direction: " + direction);
             sb.AppendLine("    Name: " + name);
-            sb.Append("    Value: " + value);
+            sb.AppendLine("    Value: " + value);
             return sb.ToString();
         }
 
@@ -61,7 +61,7 @@ namespace Synapse.Handlers.Sql
             if (isFirstResultSet)
             {
                 isFirstResultSet = false;
-                return "  ResultSet:";
+                return "  ResultSet:" + Environment.NewLine;
             }
             else
                 return null;
@@ -85,7 +85,7 @@ namespace Synapse.Handlers.Sql
                 else if (i != (reader.FieldCount - 1))
                     row.AppendLine("      " + columnName + ": " + field);
                 else
-                    row.Append("      " + columnName + ": " + field);
+                    row.AppendLine("      " + columnName + ": " + field);
             }
 
             return row.ToString();

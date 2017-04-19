@@ -83,9 +83,22 @@ namespace Synapse.Handlers.Sql
                     }
 
                     parser.Open();
-                    // Log Any Output Parameters From Call
-                    foreach (DbParameter parameter in command.Parameters)
+
+                    // Prime Parser To Know Expected Output
+                    int outputParamCount = 0;
+                    foreach (DbParameter param in command.Parameters)
                     {
+                        if (param.Direction != System.Data.ParameterDirection.Input)
+                            outputParamCount++;
+                    }
+                    parser.OutputParameters = outputParamCount;
+                    if (reader != null && reader.HasRows)
+                        parser.HasResultSet = true;
+
+                    // Log Any Output Parameters From Call
+                    for (int i=0; i<command.Parameters.Count; i++)
+                    {
+                        DbParameter parameter = command.Parameters[i];
                         ParseParameter(parameter);
                     }
 
@@ -160,7 +173,7 @@ namespace Synapse.Handlers.Sql
                     parser = new XmlDbParser(outputFile);
                     break;
                 case OutputTypeType.Json:
-                    parser = new DbParser(outputFile);
+                    parser = new JsonDbParser(outputFile);
                     break;
                 case OutputTypeType.Yaml:
                     parser = new YamlDbParser(outputFile);
