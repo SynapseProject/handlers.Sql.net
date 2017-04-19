@@ -47,7 +47,7 @@ namespace Synapse.Handlers.Sql
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("    - Name: " + name);
             sb.AppendLine("      Direction: " + direction);
-            sb.AppendLine("      Type: " + value.GetType());
+            sb.AppendLine("      Type: " + value?.GetType());
             sb.AppendLine("      Value: " + value);
             return sb.ToString();
         }

@@ -40,7 +40,7 @@ namespace Synapse.Handlers.Sql
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("          <Name>" + name + "</Name>");
             sb.AppendLine("          <Direction>" + direction + "</Direction>");
-            sb.AppendLine("          <Type>" + value.GetType() + "</Type>");
+            sb.AppendLine("          <Type>" + value?.GetType() + "</Type>");
             sb.AppendLine("          <Value>" + value + "</Value>");
             return sb.ToString();
         }

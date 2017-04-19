@@ -84,16 +84,7 @@ namespace Synapse.Handlers.Sql
 
                     parser.Open();
 
-                    // Prime Parser To Know Expected Output
-                    int outputParamCount = 0;
-                    foreach (DbParameter param in command.Parameters)
-                    {
-                        if (param.Direction != System.Data.ParameterDirection.Input)
-                            outputParamCount++;
-                    }
-                    parser.OutputParameters = outputParamCount;
-                    if (reader != null && reader.HasRows)
-                        parser.HasResultSet = true;
+                    ParseResults(reader);
 
                     // Log Any Output Parameters From Call
                     for (int i=0; i<command.Parameters.Count; i++)
@@ -102,7 +93,6 @@ namespace Synapse.Handlers.Sql
                         ParseParameter(parameter);
                     }
 
-                    ParseResults(reader);
                     parser.Close();
                 }
             }

@@ -14,9 +14,6 @@ namespace Synapse.Handlers.Sql
         public Action<string, string> Logger { get; set; }
         public String OutputFile { get; set; }
 
-        public int OutputParameters { get; set; } = 0;
-        public bool HasResultSet { get; set; } = false;
-
         protected StreamWriter _file;
         protected StringBuilder _exitData = new StringBuilder();
 
@@ -91,7 +88,7 @@ namespace Synapse.Handlers.Sql
         protected virtual String FormatParameter(ParameterDirection direction, String name, Object value)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("\"" + name + "\",\"" + direction + "\",\"" + value.GetType() + "\",\"" + value + "\"");
+            sb.AppendLine("\"" + name + "\",\"" + direction + "\",\"" + value?.GetType() + "\",\"" + value + "\"");
             return sb.ToString();
         }
 
