@@ -68,9 +68,6 @@ namespace Synapse.Handlers.Sql
                     totalSets++;
 
                 } while (reader.NextResult());
-
-//                if (this.GetType() == typeof(JsonDbParser))
-//                    WriteLine("    ]" + Environment.NewLine);
             }
 
             return _exitData.ToString();

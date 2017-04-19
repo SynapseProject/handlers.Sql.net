@@ -11,10 +11,8 @@ namespace Synapse.Handlers.Sql
 {
     class JsonDbParser : DbParser
     {
-        private bool isFirstParameter = true;
         private bool isFirstResultSet = true;
         private bool isFirstRow = true;
-        private int outparams = 0;
 
         public JsonDbParser() : base() { }
         public JsonDbParser(String outputFile) : base(outputFile) { }
@@ -31,6 +29,8 @@ namespace Synapse.Handlers.Sql
         {
             StringBuilder line = new StringBuilder();
             line.AppendLine();
+            if (!isFirstResultSet)
+                line.AppendLine("    ]");
             line.AppendLine("  }");
             line.AppendLine("}");
             return line.ToString();
@@ -41,11 +41,14 @@ namespace Synapse.Handlers.Sql
         protected override String FormatParameterOpen(ParameterDirection direction, String name, Object value)
         {
             StringBuilder line = new StringBuilder();
-            if (isFirstParameter)
+            isFirstRow = true;
+            if (isFirstResultSet)
             {
-                isFirstParameter = false;
-                line.AppendLine("    \"Parameter\": [");
+                isFirstResultSet = false;
+                line.AppendLine("    \"ResultSet\": [");
             }
+            else
+                line.AppendLine(",");
 
             line.AppendLine("      {");
 
@@ -54,30 +57,31 @@ namespace Synapse.Handlers.Sql
 
         protected override String FormatParameter(ParameterDirection direction, String name, Object value)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("        \"Direction\": \"" + direction + "\",");
-            sb.AppendLine("        \"Name\": \"" + name + "\",");
-            sb.AppendLine("        \"Value\": \"" + value + "\"");
-            return sb.ToString();
+            StringBuilder row = new StringBuilder();
+
+            if (isFirstRow)
+            {
+                row.AppendLine("        \"Row\": [");
+                isFirstRow = false;
+            }
+            else
+                row.AppendLine(",");
+
+            row.AppendLine("          {");
+
+            row.AppendLine("            \"Name\": \"" + name + "\",");
+            row.AppendLine("            \"Direction\": \"" + direction + "\",");
+            row.AppendLine("            \"Type\": \"" + value?.GetType() + "\",");
+            row.AppendLine("            \"Value\": \"" + value + "\"");
+
+            row.AppendLine("          }");
+            row.Append("        ]");
+            return row.ToString();
         }
 
         protected override String FormatParameterClose(ParameterDirection direction, String name, Object value)
         {
-            outparams++;
-            StringBuilder line = new StringBuilder();
-            line.Append("      }");
-            if (outparams == this.OutputParameters)     // Last Output Parameter
-            {
-                line.AppendLine("");
-                if (HasResultSet)
-                    line.AppendLine("    ],");
-                else
-                    line.AppendLine("    ]");
-            }
-            else
-                line.AppendLine(",");
-
-            return line.ToString();
+            return Environment.NewLine + "      }";
         }
 
         protected override String FormatResultSetOpen(DbDataReader reader)
@@ -117,9 +121,13 @@ namespace Synapse.Handlers.Sql
                 String columnName = reader.GetName(i);
                 row.Append("            \"" + columnName + "\": \"" + field + "\"");
                 if (i == (reader.FieldCount - 1))
+                {
                     row.AppendLine();
+                }
                 else
+                {
                     row.AppendLine(",");
+                }
             }
 
             row.Append("          }");
@@ -128,7 +136,11 @@ namespace Synapse.Handlers.Sql
 
         protected override String FormatResultSetClose(DbDataReader reader)
         {
-            return Environment.NewLine + "      }";
+            StringBuilder row = new StringBuilder();
+            row.AppendLine();
+            row.AppendLine("        ]");
+            row.Append("      }");
+            return row.ToString();
         }
     }
 }
