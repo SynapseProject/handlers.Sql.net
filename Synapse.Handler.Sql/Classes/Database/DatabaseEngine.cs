@@ -163,7 +163,7 @@ namespace Synapse.Handlers.Sql
                     parser = new DbParser(outputFile);
                     break;
                 case OutputTypeType.Yaml:
-                    parser = new DbParser(outputFile);
+                    parser = new YamlDbParser(outputFile);
                     break;
             }
 
