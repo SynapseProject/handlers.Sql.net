@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Data;
 
 using YamlDotNet.Serialization;
 
@@ -16,9 +17,11 @@ namespace Synapse.Handlers.Sql
     public class HandlerParameters
     {
         [XmlElement]
-        public String Query { get; set; }
+        public String Command { get; set; }
         [XmlElement]
-        public String StoredProcedure { get; set; }
+        public CommandTypeType CommandType { get; set; }
+        [XmlElement]
+        public ExecuteTypeType ExecuteType { get; set; }
         [XmlArrayItem(ElementName = "Parameter")]
         public List<ParameterType> Parameters { get; set; }
     }

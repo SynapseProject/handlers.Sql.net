@@ -16,7 +16,6 @@ namespace Synapse.Handlers.Sql
         public OutputTypeType OutputType { get; set; }
         public String OutputFile { get; set; }
         protected DbParser parser = new DbParser();
-        protected bool IsStoredProcedure = false;
 
         public DatabaseEngine() { }
 
@@ -29,29 +28,15 @@ namespace Synapse.Handlers.Sql
         public void ExecuteCommand(bool isDryRun = false)
         {
             DbConnection con = BuildConnection();
-
-            String cmdText = Parameters.Query;
-            IsStoredProcedure = false;
-            if (!String.IsNullOrEmpty(Parameters.StoredProcedure))
-            {
-                cmdText = Parameters.StoredProcedure;
-                IsStoredProcedure = true;
-            }
-
-
-            DbCommand command = BuildCommand(con, cmdText);
+            DbCommand command = BuildCommand(con, Parameters.Command);
 
             String connString = con.ConnectionString;
             connString = Regex.Replace(connString, @";password=.*?;", @";password=********;");
             Logger?.Invoke("ExecuteCommand", "Connection String - " + connString);
 
-            if (IsStoredProcedure)
-            {
-                command.CommandType = System.Data.CommandType.StoredProcedure;
-                Logger?.Invoke("ExecuteCommand", "Stored Procedure = " + command.CommandText);
-            }
-            else
-                Logger?.Invoke("ExecuteCommand", "Query - " + command.CommandText);
+            command.CommandType = GetCommandType(Parameters.CommandType);
+            Logger?.Invoke("ExecuteCommand", "Command = " + command.CommandText);
+            Logger?.Invoke("ExecuteCommand", "CommandType = " + command.CommandType);
 
             if (Parameters.Parameters != null)
             {
@@ -74,14 +59,15 @@ namespace Synapse.Handlers.Sql
                 }
                 else
                 {
-                    if (IsStoredProcedure && !(this.GetType() == typeof(SqlServerDatabaseEngine)))
+                    int rowsChanged = 0;
+                    Logger?.Invoke("ExecuteCommand", "ExecuteType = " + Parameters.ExecuteType);
+                    if (Parameters.ExecuteType == ExecuteTypeType.NonQuery)
                     {
-                        command.ExecuteNonQuery();
+                        rowsChanged = command.ExecuteNonQuery();
+                        Logger?.Invoke("ExecuteCommand", "Rows Affected = " + rowsChanged);
                     }
                     else
-                    {
                         reader = command.ExecuteReader();
-                    }
 
                     parser.Open();
 
@@ -173,6 +159,18 @@ namespace Synapse.Handlers.Sql
 
             parser.Logger = Logger;
             return parser;
+        }
+
+        protected System.Data.CommandType GetCommandType(CommandTypeType type)
+        {
+            System.Data.CommandType cmdType = System.Data.CommandType.Text;
+
+            if (type == CommandTypeType.StoredProcedure)
+                cmdType = System.Data.CommandType.StoredProcedure;
+            else if (type == CommandTypeType.TableDirect)
+                cmdType = System.Data.CommandType.TableDirect;
+
+            return cmdType;
         }
     }
 }

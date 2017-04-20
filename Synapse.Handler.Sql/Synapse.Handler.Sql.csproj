@@ -62,6 +62,8 @@
     <Compile Include="Classes\Database\OdbcDatabaseEngine.cs" />
     <Compile Include="Classes\Database\SqlServerDatabaseEngine.cs" />
     <Compile Include="Classes\Database\OracleDatabaseEngine.cs" />
+    <Compile Include="Classes\Enum\CommandTypeType.cs" />
+    <Compile Include="Classes\Enum\ExecuteTypeType.cs" />
     <Compile Include="Classes\Enum\OutputTypeType.cs" />
     <Compile Include="Classes\Enum\SqlParameterType.cs" />
     <Compile Include="Classes\HandlerConfig.cs" />

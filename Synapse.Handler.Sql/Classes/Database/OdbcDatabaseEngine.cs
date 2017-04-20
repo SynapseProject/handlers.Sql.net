@@ -23,6 +23,10 @@ namespace Synapse.Handlers.Sql
             this.OutputType = config.OutputType;
             this.OutputFile = config.OutputFile;
             this.parser = this.GetParser(config.OutputType, config.OutputFile);
+
+            // Default ExecuteType For Odbc is "Query"
+            if (Parameters.ExecuteType == ExecuteTypeType.None)
+                Parameters.ExecuteType = ExecuteTypeType.Query;
         }
 
         public override DbConnection BuildConnection()
