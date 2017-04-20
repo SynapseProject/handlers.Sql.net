@@ -7,22 +7,20 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using System.Data.SqlClient;
 using System.Data.Common;
-
-using Oracle.ManagedDataAccess.Client;
-using Oracle.ManagedDataAccess.Types;
 
 using Synapse.Core;
 using Synapse.Handlers.Sql;
 
-public class OracleHandler : HandlerRuntimeBase
+public class OdbcHandler : HandlerRuntimeBase
 {
-    ExtendedHandlerConfig config = null;
+    HandlerConfig config = null;
     HandlerParameters parameters = null;
 
     public override IHandlerRuntime Initialize(string configStr)
     {
-        config = this.DeserializeOrDefault<ExtendedHandlerConfig>(configStr);
+        config = this.DeserializeOrDefault<SqlServerHandlerConfig>(configStr);
         return base.Initialize(configStr);
     }
 
@@ -34,7 +32,7 @@ public class OracleHandler : HandlerRuntimeBase
         if (startInfo.Parameters != null)
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
-        OracleDatabaseEngine db = new OracleDatabaseEngine(config, parameters, Logger);
+        OdbcDatabaseEngine db = new OdbcDatabaseEngine(config, parameters, Logger);
         db.ExecuteCommand(startInfo.IsDryRun);
 
         return result;
@@ -44,6 +42,5 @@ public class OracleHandler : HandlerRuntimeBase
     {
         OnLogMessage(context, message);
     }
-
 }
 

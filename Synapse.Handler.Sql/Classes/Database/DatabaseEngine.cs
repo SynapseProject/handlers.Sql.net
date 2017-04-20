@@ -47,7 +47,7 @@ namespace Synapse.Handlers.Sql
             if (isStoredProc)
             {
                 command.CommandType = System.Data.CommandType.StoredProcedure;
-                Logger?.Invoke("ExecuteCommand", "Stored Procuedre = " + command.CommandText);
+                Logger?.Invoke("ExecuteCommand", "Stored Procedure = " + command.CommandText);
             }
             else
                 Logger?.Invoke("ExecuteCommand", "Query - " + command.CommandText);
@@ -73,7 +73,7 @@ namespace Synapse.Handlers.Sql
                 }
                 else
                 {
-                    if (isStoredProc && (this.GetType() == typeof(OracleDatabaseEngine)))
+                    if (isStoredProc && !(this.GetType() == typeof(SqlServerDatabaseEngine)))
                     {
                         command.ExecuteNonQuery();
                     }

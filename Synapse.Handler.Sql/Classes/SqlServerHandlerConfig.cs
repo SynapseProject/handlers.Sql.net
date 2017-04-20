@@ -15,7 +15,7 @@ using Synapse.Core.Utilities;
 
 namespace Synapse.Handlers.Sql
 {
-    public class SqlServerHandlerConfig : HandlerConfig
+    public class SqlServerHandlerConfig : ExtendedHandlerConfig
     {
         [XmlElement]
         public bool IntegratedSecurity { get; set; }

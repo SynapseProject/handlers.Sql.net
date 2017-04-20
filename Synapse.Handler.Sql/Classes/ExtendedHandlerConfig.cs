@@ -15,14 +15,14 @@ using Synapse.Core.Utilities;
 
 namespace Synapse.Handlers.Sql
 {
-    public class HandlerConfig
+    public class ExtendedHandlerConfig : HandlerConfig
     {
         [XmlElement]
-        public string ConnectionString { get; set; }
+        public string User { get; set; }
         [XmlElement]
-        public OutputTypeType OutputType { get; set; }
+        public string Password { get; set; }
         [XmlElement]
-        public string OutputFile { get; set; }
+        public string DataSource { get; set; }
     }
 
 }
