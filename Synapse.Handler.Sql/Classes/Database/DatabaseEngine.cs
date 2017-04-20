@@ -16,6 +16,7 @@ namespace Synapse.Handlers.Sql
         public OutputTypeType OutputType { get; set; }
         public String OutputFile { get; set; }
         protected DbParser parser = new DbParser();
+        protected bool IsStoredProcedure = false;
 
         public DatabaseEngine() { }
 
@@ -30,11 +31,11 @@ namespace Synapse.Handlers.Sql
             DbConnection con = BuildConnection();
 
             String cmdText = Parameters.Query;
-            bool isStoredProc = false;
+            IsStoredProcedure = false;
             if (!String.IsNullOrEmpty(Parameters.StoredProcedure))
             {
                 cmdText = Parameters.StoredProcedure;
-                isStoredProc = true;
+                IsStoredProcedure = true;
             }
 
 
@@ -44,7 +45,7 @@ namespace Synapse.Handlers.Sql
             connString = Regex.Replace(connString, @";password=.*?;", @";password=********;");
             Logger?.Invoke("ExecuteCommand", "Connection String - " + connString);
 
-            if (isStoredProc)
+            if (IsStoredProcedure)
             {
                 command.CommandType = System.Data.CommandType.StoredProcedure;
                 Logger?.Invoke("ExecuteCommand", "Stored Procedure = " + command.CommandText);
@@ -73,7 +74,7 @@ namespace Synapse.Handlers.Sql
                 }
                 else
                 {
-                    if (isStoredProc && !(this.GetType() == typeof(SqlServerDatabaseEngine)))
+                    if (IsStoredProcedure && !(this.GetType() == typeof(SqlServerDatabaseEngine)))
                     {
                         command.ExecuteNonQuery();
                     }
