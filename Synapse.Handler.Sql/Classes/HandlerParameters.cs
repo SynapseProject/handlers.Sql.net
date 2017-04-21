@@ -17,11 +17,13 @@ namespace Synapse.Handlers.Sql
     public class HandlerParameters
     {
         [XmlElement]
-        public String Command { get; set; }
+        public String Text { get; set; }
         [XmlElement]
-        public CommandTypeType CommandType { get; set; }
+        public String StoredProcedure { get; set; }
         [XmlElement]
-        public ExecuteTypeType ExecuteType { get; set; }
+        public String TableDirect { get; set; }
+        [XmlElement]
+        public bool IsQuery { get; set; } = true;
         [XmlArrayItem(ElementName = "Parameter")]
         public List<ParameterType> Parameters { get; set; }
     }

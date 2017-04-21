@@ -22,10 +22,6 @@ namespace Synapse.Handlers.Sql
             this.OutputType = config.OutputType;
             this.OutputFile = config.OutputFile;
             this.parser = this.GetParser(config.OutputType, config.OutputFile);
-
-            // Default ExecuteType For SqlServer is "Query"
-            if (Parameters.ExecuteType == ExecuteTypeType.None)
-                Parameters.ExecuteType = ExecuteTypeType.Query;
         }
 
         public override DbConnection BuildConnection()
@@ -33,20 +29,25 @@ namespace Synapse.Handlers.Sql
             SqlConnection con = new SqlConnection();
 
             StringBuilder sb = new StringBuilder();
-            if (!String.IsNullOrWhiteSpace(Config.User))
-                sb.Append(@"user id=" + Config.User + ";");
-            if (!String.IsNullOrWhiteSpace(Config.Password))
-                sb.Append(@"password=" + Config.Password + ";");
-            if (!String.IsNullOrWhiteSpace(Config.DataSource))
-                sb.Append(@"data source=" + Config.DataSource + ";");
-            if (Config.IntegratedSecurity)
-                sb.Append(@"Integrated Security=SSPI;");
-            if (Config.TrustedConnection)
-                sb.Append(@"Trusted_Connection=yes;");
-            if (!String.IsNullOrWhiteSpace(Config.Database))
-                sb.Append(@"database=" + Config.Database + ";");
-            if (Config.ConnectionTimeout > 0)
-                sb.Append(@"connection timeout=" + Config.ConnectionTimeout + ";");
+            if (!String.IsNullOrWhiteSpace(Config.ConnectionString))
+                sb.Append(Config.ConnectionString);
+            else
+            {
+                if (!String.IsNullOrWhiteSpace(Config.User))
+                    sb.Append(@"user id=" + Config.User + ";");
+                if (!String.IsNullOrWhiteSpace(Config.Password))
+                    sb.Append(@"password=" + Config.Password + ";");
+                if (!String.IsNullOrWhiteSpace(Config.DataSource))
+                    sb.Append(@"data source=" + Config.DataSource + ";");
+                if (Config.IntegratedSecurity)
+                    sb.Append(@"Integrated Security=SSPI;");
+                if (Config.TrustedConnection)
+                    sb.Append(@"Trusted_Connection=yes;");
+                if (!String.IsNullOrWhiteSpace(Config.Database))
+                    sb.Append(@"database=" + Config.Database + ";");
+                if (Config.ConnectionTimeout > 0)
+                    sb.Append(@"connection timeout=" + Config.ConnectionTimeout + ";");
+            }
 
             con.ConnectionString = sb.ToString();
 
