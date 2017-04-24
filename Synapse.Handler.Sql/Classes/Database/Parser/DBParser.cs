@@ -13,6 +13,7 @@ namespace Synapse.Handlers.Sql
     {
         public Action<string, string> Logger { get; set; }
         public String OutputFile { get; set; }
+        public String ExitData {  get { return _exitData?.ToString(); } }
 
         protected StreamWriter _file;
         protected StringBuilder _exitData = new StringBuilder();

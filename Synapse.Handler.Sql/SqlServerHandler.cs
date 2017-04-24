@@ -33,7 +33,7 @@ public class SqlServerHandler : HandlerRuntimeBase
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
         SqlServerDatabaseEngine db = new SqlServerDatabaseEngine(config, parameters, Logger);
-        db.ExecuteCommand(startInfo.IsDryRun);
+        result.ExitData = db.ExecuteCommand(startInfo.IsDryRun);
 
         return result;
     }

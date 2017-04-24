@@ -35,7 +35,7 @@ public class OracleHandler : HandlerRuntimeBase
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
         OracleDatabaseEngine db = new OracleDatabaseEngine(config, parameters, Logger);
-        db.ExecuteCommand(startInfo.IsDryRun);
+        result.ExitData = db.ExecuteCommand(startInfo.IsDryRun);
 
         return result;
     }

@@ -25,7 +25,7 @@ namespace Synapse.Handlers.Sql
             Logger = logger;
         }
 
-        public void ExecuteCommand(bool isDryRun = false)
+        public String ExecuteCommand(bool isDryRun = false)
         {
             DbConnection con = BuildConnection();
 
@@ -108,6 +108,8 @@ namespace Synapse.Handlers.Sql
                 con.Close();
                 con.Dispose();
             }
+
+            return parser.ExitData;
         }
 
         public virtual DbConnection BuildConnection()
