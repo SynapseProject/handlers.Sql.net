@@ -23,6 +23,7 @@ namespace Synapse.Handlers.Sql
             this.OutputType = config.OutputType;
             this.OutputFile = config.OutputFile;
             this.parser = this.GetParser(config.OutputType, config.OutputFile);
+            this.parser.PrettyPrint = config.PrettyPrint;
         }
 
         public override DbConnection BuildConnection()

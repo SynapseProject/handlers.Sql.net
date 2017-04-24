@@ -20,19 +20,36 @@ namespace Synapse.Handlers.Sql
         protected override String FormatFileOpen()
         {
             StringBuilder line = new StringBuilder();
-            line.AppendLine("{");
-            line.AppendLine("  \"Results\": {");
+            if (PrettyPrint)
+            {
+                line.AppendLine("{");
+                line.AppendLine("  \"Results\": {");
+            }
+            else
+                line.Append("{ \"Results\": { ");
+
             return line.ToString();
         }
 
         protected override String FormatFileClose()
         {
             StringBuilder line = new StringBuilder();
-            line.AppendLine();
-            if (!isFirstResultSet)
-                line.AppendLine("    ]");
-            line.AppendLine("  }");
-            line.AppendLine("}");
+            if (PrettyPrint)
+            {
+                line.AppendLine();
+                if (!isFirstResultSet)
+                    line.AppendLine("    ]");
+                line.AppendLine("  }");
+                line.AppendLine("}");
+            }
+            else
+            {
+                if (!isFirstResultSet)
+                    line.Append("] ");
+                line.Append("} ");
+                line.Append("}");
+            }
+
             return line.ToString();
         }
 
@@ -42,15 +59,30 @@ namespace Synapse.Handlers.Sql
         {
             StringBuilder line = new StringBuilder();
             isFirstRow = true;
-            if (isFirstResultSet)
+            if (PrettyPrint)
             {
-                isFirstResultSet = false;
-                line.AppendLine("    \"ResultSet\": [");
+                if (isFirstResultSet)
+                {
+                    isFirstResultSet = false;
+                    line.AppendLine("    \"ResultSet\": [");
+                }
+                else
+                    line.AppendLine(",");
+
+                line.AppendLine("      {");
             }
             else
-                line.AppendLine(",");
+            {
+                if (isFirstResultSet)
+                {
+                    isFirstResultSet = false;
+                    line.Append("\"ResultSet\": [ ");
+                }
+                else
+                    line.Append(", ");
 
-            line.AppendLine("      {");
+                line.Append("{ ");
+            }
 
             return line.ToString();
         }
@@ -59,44 +91,86 @@ namespace Synapse.Handlers.Sql
         {
             StringBuilder row = new StringBuilder();
 
-            if (isFirstRow)
+            if (PrettyPrint)
             {
-                row.AppendLine("        \"Row\": [");
-                isFirstRow = false;
+                if (isFirstRow)
+                {
+                    row.AppendLine("        \"Row\": [");
+                    isFirstRow = false;
+                }
+                else
+                    row.AppendLine(",");
+
+                row.AppendLine("          {");
+
+                row.AppendLine("            \"Name\": \"" + name + "\",");
+                row.AppendLine("            \"Direction\": \"" + direction + "\",");
+                row.AppendLine("            \"Type\": \"" + value?.GetType() + "\",");
+                row.AppendLine("            \"Value\": \"" + value + "\"");
+
+                row.AppendLine("          }");
+                row.Append("        ]");
             }
             else
-                row.AppendLine(",");
+            {
+                if (isFirstRow)
+                {
+                    row.Append("\"Row\": [ ");
+                    isFirstRow = false;
+                }
+                else
+                    row.Append(", ");
 
-            row.AppendLine("          {");
+                row.Append("{ ");
 
-            row.AppendLine("            \"Name\": \"" + name + "\",");
-            row.AppendLine("            \"Direction\": \"" + direction + "\",");
-            row.AppendLine("            \"Type\": \"" + value?.GetType() + "\",");
-            row.AppendLine("            \"Value\": \"" + value + "\"");
+                row.Append("\"Name\": \"" + name + "\", ");
+                row.Append("\"Direction\": \"" + direction + "\", ");
+                row.Append("\"Type\": \"" + value?.GetType() + "\", ");
+                row.Append("\"Value\": \"" + value + "\" ");
 
-            row.AppendLine("          }");
-            row.Append("        ]");
+                row.Append("} ");
+                row.Append("] ");
+            }
+
             return row.ToString();
         }
 
         protected override String FormatParameterClose(ParameterDirection direction, String name, Object value)
         {
-            return Environment.NewLine + "      }";
+            if (PrettyPrint)
+                return Environment.NewLine + "      }";
+            else
+                return "} ";
         }
 
         protected override String FormatResultSetOpen(DbDataReader reader)
         {
             StringBuilder line = new StringBuilder();
             isFirstRow = true;
-            if (isFirstResultSet)
+            if (PrettyPrint)
             {
-                isFirstResultSet = false;
-                line.AppendLine("    \"ResultSet\": [");
+                if (isFirstResultSet)
+                {
+                    isFirstResultSet = false;
+                    line.AppendLine("    \"ResultSet\": [");
+                }
+                else
+                    line.AppendLine(",");
+
+                line.AppendLine("      {");
             }
             else
-                line.AppendLine(",");
+            {
+                if (isFirstResultSet)
+                {
+                    isFirstResultSet = false;
+                    line.Append("\"ResultSet\": [ ");
+                }
+                else
+                    line.Append(", ");
 
-            line.AppendLine("      {");
+                line.Append("{ ");
+            }
 
             return line.ToString();
         }
@@ -105,41 +179,83 @@ namespace Synapse.Handlers.Sql
         {
             StringBuilder row = new StringBuilder();
 
-            if (isFirstRow)
+            if (PrettyPrint)
             {
-                row.AppendLine("        \"Row\": [");
-                isFirstRow = false;
-            }
-            else
-                row.AppendLine(",");
-
-            row.AppendLine("          {");
-
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                String field = reader.GetValue(i)?.ToString();
-                String columnName = reader.GetName(i);
-                row.Append("            \"" + columnName + "\": \"" + field + "\"");
-                if (i == (reader.FieldCount - 1))
+                if (isFirstRow)
                 {
-                    row.AppendLine();
+                    row.AppendLine("        \"Row\": [");
+                    isFirstRow = false;
                 }
                 else
-                {
                     row.AppendLine(",");
+
+                row.AppendLine("          {");
+
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    String field = reader.GetValue(i)?.ToString();
+                    String columnName = reader.GetName(i);
+                    row.Append("            \"" + columnName + "\": \"" + field + "\"");
+                    if (i == (reader.FieldCount - 1))
+                    {
+                        row.AppendLine();
+                    }
+                    else
+                    {
+                        row.AppendLine(",");
+                    }
                 }
+
+                row.Append("          }");
+            }
+            else
+            {
+                if (isFirstRow)
+                {
+                    row.Append("\"Row\": [ ");
+                    isFirstRow = false;
+                }
+                else
+                    row.Append(", ");
+
+                row.Append("{ ");
+
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    String field = reader.GetValue(i)?.ToString();
+                    String columnName = reader.GetName(i);
+                    row.Append("\"" + columnName + "\": \"" + field + "\" ");
+                    if (i == (reader.FieldCount - 1))
+                    {
+                        row.Append("");
+                    }
+                    else
+                    {
+                        row.Append(", ");
+                    }
+                }
+
+                row.Append("} ");
             }
 
-            row.Append("          }");
             return row.ToString();
         }
 
         protected override String FormatResultSetClose(DbDataReader reader)
         {
             StringBuilder row = new StringBuilder();
-            row.AppendLine();
-            row.AppendLine("        ]");
-            row.Append("      }");
+            if (PrettyPrint)
+            {
+                row.AppendLine();
+                row.AppendLine("        ]");
+                row.Append("      }");
+            }
+            else
+            {
+                row.Append("] ");
+                row.Append("} ");
+            }
+
             return row.ToString();
         }
     }

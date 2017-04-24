@@ -23,6 +23,8 @@ namespace Synapse.Handlers.Sql
         public OutputTypeType OutputType { get; set; }
         [XmlElement]
         public string OutputFile { get; set; }
+        [XmlElement]
+        public bool PrettyPrint { get; set; } = false;
     }
 
 }

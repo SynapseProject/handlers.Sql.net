@@ -14,6 +14,7 @@ namespace Synapse.Handlers.Sql
         public Action<string, string> Logger { get; set; }
         public String OutputFile { get; set; }
         public String ExitData {  get { return _exitData?.ToString(); } }
+        public bool PrettyPrint { get; set; } = false;
 
         protected StreamWriter _file;
         protected StringBuilder _exitData = new StringBuilder();
