@@ -41,10 +41,11 @@ namespace Synapse.Handlers.Sql
                     sb.Append(@"password=" + Config.Password + ";");
                 if (!String.IsNullOrWhiteSpace(Config.DataSource))
                     sb.Append(@"data source=" + Config.DataSource + ";");
+                if (Config.ConnectionTimeout > 0)
+                    sb.Append(@"connection timeout=" + Config.ConnectionTimeout + ";");
             }
 
             con.ConnectionString = sb.ToString();
-
             return con;
         }
 

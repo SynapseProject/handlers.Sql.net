@@ -30,6 +30,8 @@ namespace Synapse.Handlers.Sql
         {
             OdbcConnection con = new OdbcConnection();
             con.ConnectionString = Config.ConnectionString;
+            if (Config.ConnectionTimeout > 0)
+                con.ConnectionTimeout = Config.ConnectionTimeout;
             return con;
         }
 

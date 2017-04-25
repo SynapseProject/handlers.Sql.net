@@ -23,8 +23,6 @@ namespace Synapse.Handlers.Sql
         public bool TrustedConnection { get; set; }
         [XmlElement]
         public string Database { get; set; }
-        [XmlElement]
-        public int ConnectionTimeout { get; set; }
     }
 
 }

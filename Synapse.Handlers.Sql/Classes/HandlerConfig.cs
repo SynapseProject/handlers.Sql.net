@@ -20,6 +20,8 @@ namespace Synapse.Handlers.Sql
         [XmlElement]
         public string ConnectionString { get; set; }
         [XmlElement]
+        public int ConnectionTimeout { get; set; }
+        [XmlElement]
         public OutputTypeType OutputType { get; set; }
         [XmlElement]
         public string OutputFile { get; set; }
