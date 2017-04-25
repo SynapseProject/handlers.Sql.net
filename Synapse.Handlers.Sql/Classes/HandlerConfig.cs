@@ -22,6 +22,8 @@ namespace Synapse.Handlers.Sql
         [XmlElement]
         public int ConnectionTimeout { get; set; }
         [XmlElement]
+        public int CommandTimeout { get; set; } = 60;
+        [XmlElement]
         public OutputTypeType OutputType { get; set; }
         [XmlElement]
         public string OutputFile { get; set; }

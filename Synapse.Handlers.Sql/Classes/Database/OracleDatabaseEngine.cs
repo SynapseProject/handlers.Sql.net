@@ -77,6 +77,8 @@ namespace Synapse.Handlers.Sql
             OracleCommand command = new OracleCommand();
             command.Connection = (OracleConnection)con;
             command.CommandText = commandText;
+            if (Config.CommandTimeout > 0)
+                command.CommandTimeout = Config.CommandTimeout;
             return command;
         }
 

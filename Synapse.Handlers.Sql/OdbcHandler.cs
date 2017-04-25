@@ -33,7 +33,7 @@ public class OdbcHandler : HandlerRuntimeBase
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
         OdbcDatabaseEngine db = new OdbcDatabaseEngine(config, parameters, Logger);
-        db.ExecuteCommand(startInfo.IsDryRun);
+        result.ExitData = db.ExecuteCommand(startInfo.IsDryRun);
 
         return result;
     }

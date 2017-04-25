@@ -55,6 +55,8 @@ namespace Synapse.Handlers.Sql
             OdbcCommand command = new OdbcCommand();
             command.Connection = (OdbcConnection)con;
             command.CommandText = commandText;
+            if (Config.CommandTimeout > 0)
+                command.CommandTimeout = Config.CommandTimeout;
             return command;
         }
 
