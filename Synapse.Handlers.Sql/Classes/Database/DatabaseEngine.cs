@@ -105,6 +105,7 @@ namespace Synapse.Handlers.Sql
 
             finally
             {
+                command.Dispose();
                 con.Close();
                 con.Dispose();
             }
