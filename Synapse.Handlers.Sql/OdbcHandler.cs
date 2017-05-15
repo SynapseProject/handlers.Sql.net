@@ -24,6 +24,37 @@ public class OdbcHandler : HandlerRuntimeBase
         return base.Initialize(configStr);
     }
 
+    public override object GetConfigInstance()
+    {
+        HandlerConfig config = new HandlerConfig();
+
+        config.ConnectionString = @"DSN=SOMEDSN";
+        config.ConnectionTimeout = 60;
+        config.CommandTimeout = 300;
+        config.OutputType = OutputTypeType.Xml;
+        config.OutputFile = @"C:\Temp\FileNotReallyNeeded.xml";
+        config.PrettyPrint = true;
+
+        return config;
+    }
+
+    public override object GetParametersInstance()
+    {
+        HandlerParameters parms = new HandlerParameters();
+
+        parms.Text = @"SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG = ?";
+        parms.IsQuery = true;
+        parms.Parameters = new List<ParameterType>();
+
+        ParameterType p = new ParameterType();
+        p.Name = @"NotReallyUsedInOdbc";
+        p.Value = @"SANDBOX";
+        parms.Parameters.Add(p);
+
+        return parms;
+
+    }
+
     public override ExecuteResult Execute(HandlerStartInfo startInfo)
     {
         ExecuteResult result = new ExecuteResult();

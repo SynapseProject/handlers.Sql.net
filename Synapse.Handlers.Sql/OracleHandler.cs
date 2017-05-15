@@ -26,6 +26,40 @@ public class OracleHandler : HandlerRuntimeBase
         return base.Initialize(configStr);
     }
 
+    public override object GetConfigInstance()
+    {
+        ExtendedHandlerConfig config = new ExtendedHandlerConfig();
+
+        config.User = @"scott";
+        config.Password = @"tiger";
+        config.DataSource = @"(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521))(CONNECT_DATA =(SERVER = DEDICATED)(SERVICE_NAME = XE)))";
+        config.ConnectionTimeout = 60;
+        config.CommandTimeout = 300;
+        config.OutputType = OutputTypeType.Xml;
+        config.OutputFile = @"C:\Temp\FileNotReallyNeeded.xml";
+        config.PrettyPrint = true;
+
+        return config;
+    }
+
+    public override object GetParametersInstance()
+    {
+        HandlerParameters parms = new HandlerParameters();
+
+        parms.Text = @"SELECT * FROM PRESIDENTS WHERE AGE > :AGE";
+        parms.IsQuery = true;
+        parms.Parameters = new List<ParameterType>();
+
+        ParameterType p = new ParameterType();
+        p.Name = @"AGE";
+        p.Value = @"70";
+        parms.Parameters.Add(p);
+
+        return parms;
+
+    }
+
+
     public override ExecuteResult Execute(HandlerStartInfo startInfo)
     {
         ExecuteResult result = new ExecuteResult();
