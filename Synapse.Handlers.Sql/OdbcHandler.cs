@@ -60,6 +60,10 @@ public class OdbcHandler : HandlerRuntimeBase
         ExecuteResult result = new ExecuteResult();
         result.Status = StatusType.Success;
 
+        // TODO : Implement DryRun Functionality
+        if (startInfo.IsDryRun)
+            throw new NotImplementedException("Dry Run Functionality Has Not Yet Been Implemented.");
+
         if (startInfo.Parameters != null)
             parameters = this.DeserializeOrDefault<HandlerParameters>(startInfo.Parameters);
 
