@@ -1,0 +1,7 @@
+Results:
+  ResultSet:
+  - Row:
+    - Name: @Param1
+      Direction: InputOutput
+      Type: System.Int32
+      Value: 200

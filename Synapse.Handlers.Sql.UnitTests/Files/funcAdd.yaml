@@ -1,0 +1,7 @@
+Results:
+  ResultSet:
+  - Row:
+    - Name: @Result
+      Direction: ReturnValue
+      Type: System.Int32
+      Value: 300

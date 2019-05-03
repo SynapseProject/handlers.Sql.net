@@ -86,7 +86,8 @@ namespace Synapse.Handlers.Sql
                     parser.Open();
 
                     ParseResults(reader);
-
+                    // SH: need to close reader before we can access the output parameters and return value
+                    reader.Close();
                     // Log Any Output Parameters From Call
                     for (int i=0; i<command.Parameters.Count; i++)
                     {

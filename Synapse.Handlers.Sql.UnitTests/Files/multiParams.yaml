@@ -1,0 +1,45 @@
+Results:
+  ResultSet:
+  - Row:
+    - ID: 1
+      NAME: George Washington
+      AGE: 67
+    - ID: 2
+      NAME: John Adams
+      AGE: 90
+    - ID: 3
+      NAME: Thomas Jefferson
+      AGE: 83
+    - ID: 4
+      NAME: James Madison
+      AGE: 85
+    - ID: 5
+      NAME: James Monroe
+      AGE: 73
+  - Row:
+    - ID: 44
+      NAME: Barack Obama
+      AGE: 55
+    - ID: 45
+      NAME: Donald Trump
+      AGE: 70
+  - Row:
+    - Name: @ReturnValue
+      Direction: ReturnValue
+      Type: System.Int32
+      Value: 42
+  - Row:
+    - Name: @Param2
+      Direction: Output
+      Type: System.Int32
+      Value: 200
+  - Row:
+    - Name: @Param3
+      Direction: Output
+      Type: System.Int32
+      Value: 300
+  - Row:
+    - Name: @Param4
+      Direction: Output
+      Type: System.DateTime
+      Value: 01/12/2019 13:01:02
