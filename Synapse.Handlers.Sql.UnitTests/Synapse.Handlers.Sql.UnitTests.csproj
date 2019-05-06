@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OdbcHandlerTests.cs" />
+    <Compile Include="OracleHandlerTests.cs" />
     <Compile Include="SqlServerHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
